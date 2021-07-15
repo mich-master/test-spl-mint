@@ -3,6 +3,8 @@ use solana_sdk::instruction::{ Instruction };
 use solana_sdk::transaction::{ Transaction };
 use solana_sdk::signer::{ Signer };
 use solana_sdk::signer::keypair::{ Keypair, read_keypair_file };
+use solana_sdk::program_pack::{ Pack };
+use spl_token::state::{ Mint, Account };
 
 use solana_client::rpc_client::{ RpcClient };
 
@@ -31,14 +33,14 @@ fn main() {
             let mint_account_pubkey = mint_account.pubkey();
             println!("Special Token Mint: {}", mint_account_pubkey);
 
-            let minimum_balance_for_rent_exemption = client.get_minimum_balance_for_rent_exemption(82).unwrap();
+            let minimum_balance_for_rent_exemption = client.get_minimum_balance_for_rent_exemption(Mint::LEN).unwrap();
 
             let create_account_instruction: Instruction =
                 solana_sdk::system_instruction::create_account(
                     &wallet_pubkey,
                     &mint_account_pubkey,
                     minimum_balance_for_rent_exemption,
-                    82,
+                    Mint::LEN as u64,
                     &spl_token::id(),
                 );
             let initialize_mint_instruction: Instruction =
@@ -90,8 +92,8 @@ fn main() {
                 solana_sdk::system_instruction::create_account(
                     &wallet_pubkey,
                     &account_mint_to_pubkey,
-                    client.get_minimum_balance_for_rent_exemption(165).unwrap(),
-                    165,
+                    client.get_minimum_balance_for_rent_exemption(Account::LEN).unwrap(),
+                    Account::LEN as u64,
                     &spl_token::id(),
                 );
             let initialize_account2_instruction: Instruction =
